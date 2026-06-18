@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Package } from 'lucide-react';
+import api from '@/lib/axios';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -15,13 +16,8 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Login failed');
+      const res = await api.post('/auth/login', { email, password });
+      const data = res.data;
       
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -32,7 +28,7 @@ export default function Login() {
         router.push('/catalog');
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message || 'Login failed');
     }
   };
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Package } from 'lucide-react';
+import api from '@/lib/axios';
 
 export default function DashboardOrders() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -21,11 +22,10 @@ export default function DashboardOrders() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/orders`, {
+      const res = await api.get('/orders', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const data = await res.json();
-      setOrders(data);
+      setOrders(res.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -36,21 +36,15 @@ export default function DashboardOrders() {
   const handleStatusChange = async (orderId: number, status: string) => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/orders/${orderId}/status`, {
-        method: 'PATCH',
+      await api.patch(`/orders/${orderId}/status`, { status }, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status })
+        }
       });
-      if (res.ok) {
-        fetchOrders();
-      } else {
-        alert('Failed to update status');
-      }
+      fetchOrders();
     } catch (err) {
       console.error(err);
+      alert('Failed to update status');
     }
   };
 

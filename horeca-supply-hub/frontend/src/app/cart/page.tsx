@@ -5,6 +5,7 @@ import { Minus, Plus, Trash2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import api from '@/lib/axios';
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, clearCart } = useCartStore();
@@ -22,30 +23,22 @@ export default function Cart() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/orders`, {
-        method: 'POST',
+      const res = await api.post('/orders', {
+        items: items.map(item => ({
+          productId: item.product.id,
+          quantity: item.quantity
+        }))
+      }, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          items: items.map(item => ({
-            productId: item.product.id,
-            quantity: item.quantity
-          }))
-        })
+        }
       });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Failed to place order');
-      }
 
       clearCart();
       router.push('/orders');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert(err);
+      alert(err.response?.data?.message || err.message || 'An error occurred');
     } finally {
       setLoading(false);
     }

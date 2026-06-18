@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useCartStore, Product } from '@/store/cartStore';
 import { Search, Filter, ShoppingCart, Info } from 'lucide-react';
 import Image from 'next/image';
+import api from '@/lib/axios';
 
 export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -19,9 +20,9 @@ export default function Catalog() {
       setUserRole(JSON.parse(userStr).role);
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/products`)
-      .then(res => res.json())
-      .then(data => {
+    api.get('/products')
+      .then(res => {
+        const data = res.data;
         setProducts(data);
         if (data.length > 0) {
           setMaxPrice(Math.max(...data.map((p: Product) => p.price)) + 10);

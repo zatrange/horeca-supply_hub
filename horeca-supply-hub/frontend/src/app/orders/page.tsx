@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Package, Clock, CheckCircle2, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import api from '@/lib/axios';
 
 export default function Orders() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -16,13 +17,13 @@ export default function Orders() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/orders`, {
+    api.get('/orders', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-      .then(res => res.json())
-      .then(data => {
+      .then(res => {
+        const data = res.data;
         setOrders(data);
         setLoading(false);
       })

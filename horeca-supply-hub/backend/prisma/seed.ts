@@ -52,8 +52,6 @@ async function main() {
     { name: 'Atlantic Salmon', description: 'Fresh Atlantic Salmon fillets', price: 15.0, stock: 40, supplierId: supplier2.id, imageUrl: 'https://images.unsplash.com/photo-1485921325833-c519f76c4927?w=500' },
     { name: 'Jumbo Shrimp', description: 'Wild caught jumbo shrimp', price: 20.0, stock: 30, supplierId: supplier2.id, imageUrl: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=500' },
     { name: 'Oysters', description: 'Live oysters', price: 18.0, stock: 60, supplierId: supplier2.id, imageUrl: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?w=500' },
-    { name: 'Scallops', description: 'Sea scallops', price: 25.0, stock: 20, supplierId: supplier2.id, imageUrl: 'https://images.unsplash.com/photo-1599084990807-36074bbefc46?w=500' },
-    { name: 'Mussels', description: 'Fresh blue mussels', price: 12.0, stock: 100, supplierId: supplier2.id, imageUrl: 'https://images.unsplash.com/photo-1563261622-6b3a379fbca3?w=500' },
   ];
 
   for (const p of productsData) {

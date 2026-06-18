@@ -4,7 +4,6 @@ import { ArrowRight, ChefHat, Truck, TrendingUp } from 'lucide-react';
 export default function Home() {
   return (
     <div className="space-y-20">
-      {/* Hero Section */}
       <section className="text-center space-y-8 pt-10">
         <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl">
           The Premier B2B Platform for <br className="hidden sm:block" />

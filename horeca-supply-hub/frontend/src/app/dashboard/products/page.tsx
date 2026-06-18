@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Edit2, Trash2, Package } from 'lucide-react';
+import api from '@/lib/axios';
 
 export default function DashboardProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -30,8 +31,8 @@ export default function DashboardProducts() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/products`);
-      const data = await res.json();
+      const res = await api.get('/products');
+      const data = res.data;
       // Filter for only this supplier's products
       setProducts(data.filter((p: any) => p.supplierId === user.id));
     } catch (err) {
@@ -45,28 +46,21 @@ export default function DashboardProducts() {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/products`, {
-        method: 'POST',
+      await api.post('/products', {
+        ...formData,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock, 10),
+      }, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...formData,
-          price: parseFloat(formData.price),
-          stock: parseInt(formData.stock, 10),
-        })
+        }
       });
-      if (res.ok) {
-        setShowForm(false);
-        setFormData({ name: '', description: '', price: '', stock: '', imageUrl: '' });
-        fetchProducts();
-      } else {
-        const error = await res.json();
-        alert(error.message || 'Failed to create product');
-      }
-    } catch (err) {
+      setShowForm(false);
+      setFormData({ name: '', description: '', price: '', stock: '', imageUrl: '' });
+      fetchProducts();
+    } catch (err: any) {
       console.error(err);
+      alert(err.response?.data?.message || err.message || 'Failed to create product');
     }
   };
 
@@ -74,17 +68,13 @@ export default function DashboardProducts() {
     if (!confirm('Are you sure you want to delete this product?')) return;
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/products/${id}`, {
-        method: 'DELETE',
+      await api.delete(`/products/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (res.ok) {
-        fetchProducts();
-      } else {
-        alert('Failed to delete product');
-      }
+      fetchProducts();
     } catch (err) {
       console.error(err);
+      alert('Failed to delete product');
     }
   };
 

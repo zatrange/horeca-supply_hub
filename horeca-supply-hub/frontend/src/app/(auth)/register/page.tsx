@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Package } from 'lucide-react';
+import api from '@/lib/axios';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -17,13 +18,8 @@ export default function Register() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Registration failed');
+      const res = await api.post('/auth/register', { name, email, password, role });
+      const data = res.data;
       
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -34,7 +30,7 @@ export default function Register() {
         router.push('/catalog');
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || err.message || 'Registration failed');
     }
   };
 
